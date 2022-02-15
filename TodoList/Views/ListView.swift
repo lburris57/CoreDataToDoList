@@ -36,7 +36,7 @@ extension SearchType
     }
 }
 
-enum SortType: String, Identifiable, CaseIterable, Hashable
+enum SortOrder: String, Identifiable, CaseIterable, Hashable
 {
     var id: UUID
     {
@@ -47,9 +47,9 @@ enum SortType: String, Identifiable, CaseIterable, Hashable
     case descending = "Descending"
 }
 
-extension SortType
+extension SortOrder
 {
-    var sortType: String
+    var sortOrder: String
     {
         switch self
         {
@@ -66,13 +66,11 @@ struct ListView: View
     @EnvironmentObject var listViewModel: ListViewModel
     
     @State private var selectedSearchType: SearchType = .noFilter
-    @State private var selectedSortType: SortType = .ascending
-    @State private var searchText = Constants.EMPTY_STRING
-    @State private var sortText = Constants.EMPTY_STRING
+    @State private var selectedSortOrder: SortOrder = .ascending
     
     func filterToDoItems()
     {
-        listViewModel.filterToDoItems(searchType: selectedSearchType.searchType, sortType: selectedSortType.sortType)
+        listViewModel.filterToDoItems(searchType: selectedSearchType.searchType, sortOrder: selectedSortOrder.sortOrder)
     }
 
     var body: some View
@@ -109,7 +107,7 @@ struct ListView: View
                                 
                                 Button(action: { filterToDoItems() })
                                 {
-                                    Label("", systemImage: "mail.stack").foregroundColor(.accentColor)
+                                    Label("Sort", systemImage: "mail.stack").foregroundColor(.accentColor)
                                 }
                                 .padding(.horizontal, 15)
                                 
@@ -120,15 +118,15 @@ struct ListView: View
                             {
                                 HStack
                                 {
-                                    Text(" Sort Type:").foregroundColor(Color.secondary)
+                                    Text(" Sort Order:").foregroundColor(Color.secondary)
                                     
-                                    Picker("Sort Type", selection: $selectedSortType)
+                                    Picker("Sort Order", selection: $selectedSortOrder)
                                     {
-                                        ForEach(SortType.allCases)
+                                        ForEach(SortOrder.allCases)
                                         {
-                                            sortType in
+                                            sortOrder in
 
-                                            Text(sortType.sortType).tag(sortType)
+                                            Text(sortOrder.sortOrder).tag(sortOrder)
                                         }
                                     }.pickerStyle(.menu)
                                     

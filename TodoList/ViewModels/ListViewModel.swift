@@ -27,9 +27,9 @@ class ListViewModel: ObservableObject
         retrieveUserNameFromUserDefaults()
     }
     
-    func filterToDoItems(searchType: String, sortType: String)
+    func filterToDoItems(searchType: String, sortOrder: String)
     {
-        Log.info("SearchType is \(searchType) and sortType is \(sortType)")
+        Log.info("SearchType is \(searchType) and sortOrder is \(sortOrder)")
         
         retrieveToDoItems()
         
@@ -41,7 +41,7 @@ class ListViewModel: ObservableObject
             {
                 lhs, rhs in
                 
-                return sortType == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
+                return sortOrder == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
                 
             })
         }
@@ -53,7 +53,7 @@ class ListViewModel: ObservableObject
             {
                 lhs, rhs in
                 
-                return sortType == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
+                return sortOrder == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
                 
             })
         }
@@ -91,7 +91,7 @@ class ListViewModel: ObservableObject
         
         if let retrievedToDoItem = ToDoItemEntity.byId(id: toDoItem.id) as? ToDoItemEntity
         {
-            //  Delete the satabase record and refresh the list from the database
+            //  Delete the database record and refresh the list from the database
             retrievedToDoItem.delete()
         
             retrieveToDoItems()

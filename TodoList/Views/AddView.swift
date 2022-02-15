@@ -26,7 +26,7 @@ struct AddView: View
         {
             VStack(alignment: .leading, spacing: 20)
             {
-                TextField("Please enter a new item name...", text: $title)
+                TextField("Please enter a new to do item title...", text: $title)
                     .padding(.horizontal)
                     .frame(maxWidth: 400)
                     .frame(height: 55)
