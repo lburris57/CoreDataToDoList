@@ -1,8 +1,9 @@
 //
 //  BaseModel.swift
-//  SwiftUI Requirements and Specifications
+//  TodoList
 //
-//  Created by Larry Burris on 10/26/21.
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import Foundation
 import CoreData
@@ -32,7 +33,7 @@ extension BaseModel
         {
             CoreDataManager.shared.persistentContainer.viewContext.rollback()
             
-            Log.error("Error saving requirement: \(error.localizedDescription)")
+            Log.error("Error saving data: \(error.localizedDescription)")
         }
     }
     
@@ -52,7 +53,7 @@ extension BaseModel
         }
         catch
         {
-            Log.error("Error retrieving all requirements: \(error.localizedDescription)")
+            Log.error("Error retrieving all \(T.self) objects: \(error.localizedDescription)")
             
             return []
         }

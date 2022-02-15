@@ -2,8 +2,8 @@
 //  ListViewModel.swift
 //  TodoList
 //
-//  Created by Nick Sarno on 3/3/21
-//  Adapted by Larry Burris on 2/14/2022
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import Foundation
 import CloudKit
@@ -15,16 +15,52 @@ class ListViewModel: ObservableObject
     let viewContext = CoreDataManager.shared.persistentContainer.viewContext
     
     @Published var userName: String = "Anonymous"
-    
     @Published var toDoItems: [ToDoItem] = []
     
-    let itemsKey: String = "items_list"
     let userNameKey: String = "userName"
+    
+    var isFiltered = false
 
     init()
     {
         retrieveToDoItems()
         retrieveUserNameFromUserDefaults()
+    }
+    
+    func filterToDoItems(searchType: String, sortType: String)
+    {
+        Log.info("SearchType is \(searchType) and sortType is \(sortType)")
+        
+        retrieveToDoItems()
+        
+        if searchType == "Completed"
+        {
+            isFiltered = true
+            
+            toDoItems = toDoItems.filter {$0.isCompleted == true}.sorted(by:
+            {
+                lhs, rhs in
+                
+                return sortType == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
+                
+            })
+        }
+        else if searchType == "Not Completed"
+        {
+            isFiltered = true
+            
+            toDoItems = toDoItems.filter {$0.isCompleted == false}.sorted(by:
+            {
+                lhs, rhs in
+                
+                return sortType == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
+                
+            })
+        }
+        else
+        {
+            isFiltered = false
+        }
     }
     
     func retrieveUserNameFromUserDefaults()
@@ -39,7 +75,7 @@ class ListViewModel: ObservableObject
 
         userName = savedUserName
         
-        Log.info("Saved username is: \(userName)")
+        Log.info("Retrieved username from UserDefaults is: \(userName)")
     }
 
     func retrieveToDoItems()
@@ -55,7 +91,7 @@ class ListViewModel: ObservableObject
         
         if let retrievedToDoItem = ToDoItemEntity.byId(id: toDoItem.id) as? ToDoItemEntity
         {
-            //  Delete the satabase record
+            //  Delete the satabase record and refresh the list from the database
             retrievedToDoItem.delete()
         
             retrieveToDoItems()
@@ -67,7 +103,7 @@ class ListViewModel: ObservableObject
         toDoItems.move(fromOffsets: from, toOffset: to)
     }
 
-    func addItem(title: String, description: String)
+    func addToDoItem(title: String, description: String)
     {
         let toDoItemEntity = ToDoItemEntity(context: viewContext)
         
@@ -89,6 +125,8 @@ class ListViewModel: ObservableObject
         {
             toDoItemEntity.isCompleted = !toDoItem.isCompleted
             toDoItemEntity.lastUpdated = Date()
+            
+            toDoItemEntity.save()
         }
         
         retrieveToDoItems()

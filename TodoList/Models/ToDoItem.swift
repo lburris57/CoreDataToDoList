@@ -2,12 +2,14 @@
 //  ToDoItem.swift
 //  TodoList
 //
-//  Created by Nick Sarno on 3/2/21
-//  Adapted for Core Data by Larry Burris on 2/14/2022
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import Foundation
 import CoreData
 
+//  Presentation layer struct that has computed fields that
+//  return the values from the ToDoItemEntity database class
 struct ToDoItem: Identifiable
 {
     let toDoItemEntity: ToDoItemEntity
@@ -34,12 +36,12 @@ struct ToDoItem: Identifiable
     
     var dateCreated: String
     {
-        return toDoItemEntity.dateCreated?.asFormattedString() ?? Constants.EMPTY_STRING
+        return toDoItemEntity.dateCreated?.asShortDateFormattedString() ?? Constants.EMPTY_STRING
     }
     
     var lastUpdated: String
     {
-        return toDoItemEntity.lastUpdated?.getTextFromDate() ?? Constants.EMPTY_STRING
+        return toDoItemEntity.lastUpdated?.asLongDateFormattedString() ?? Constants.EMPTY_STRING
     }
     
     var isCompleted: Bool
@@ -50,7 +52,7 @@ struct ToDoItem: Identifiable
 
 extension Date
 {
-    func getTextFromDate() -> String
+    func asLongDateFormattedString() -> String
     {
         let formatter = DateFormatter()
         formatter.locale = .current
@@ -58,7 +60,7 @@ extension Date
         return formatter.string(from: self)
     }
     
-    func asFormattedString() -> String
+    func asShortDateFormattedString() -> String
     {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd/yyyy"

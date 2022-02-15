@@ -1,9 +1,9 @@
 //
 //  Constants.swift
-//  SwiftUI Requirements and Specifications
+//  TodoList
 //
-//  Created by Larry Burris on 10/20/21.
-//  Copyright © 2021 Larry Burris. All rights reserved.
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import Foundation
 

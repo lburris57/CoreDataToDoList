@@ -1,8 +1,9 @@
 //
 //  CoreDataManager.swift
-//  SwiftUI Requirements and Specifications
+//  TodoList
 //
-//  Created by Larry Burris on 10/21/21.
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import CoreData
 import Foundation

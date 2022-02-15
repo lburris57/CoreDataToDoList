@@ -2,8 +2,8 @@
 //  AddView.swift
 //  TodoList
 //
-//  Created by Nick Sarno on 3/2/21
-//  Adapted by Larry Burris on 2/14/2022
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import SwiftUI
 
@@ -42,7 +42,7 @@ struct AddView: View
                     .frame(maxWidth: 400)
                     .frame(height: 200)
                     .background(Color(UIColor.secondarySystemBackground))
-                    .border(.secondary, width: 4)
+                    .border(Color.accentColor, width: 2)
                     .cornerRadius(5)
                 }
 
@@ -60,9 +60,7 @@ struct AddView: View
                             x: 0,
                             y: 20)
                         
-                })
-                .disabled(!validateFields())
-                
+                }).disabled(!validateFields())
             }
             .padding(14)
         }
@@ -73,7 +71,7 @@ struct AddView: View
     // MARK: FUNCTIONS
     func saveButtonPressed()
     {
-        listViewModel.addItem(title: title, description: description)
+        listViewModel.addToDoItem(title: title, description: description)
         presentationMode.wrappedValue.dismiss()
     }
 
@@ -106,6 +104,7 @@ struct AddView_Previews: PreviewProvider
             }
             .preferredColorScheme(.light)
             .environmentObject(ListViewModel())
+            
             NavigationView
             {
                 AddView()

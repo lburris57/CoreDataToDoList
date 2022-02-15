@@ -2,8 +2,8 @@
 //  ListRowView.swift
 //  TodoList
 //
-//  Created by Nick Sarno on 3/2/21
-//  Adapted by Larry Burris on 2/14/2022
+//  Created by Larry Burris on 02/14/22.
+//  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import SwiftUI
 
