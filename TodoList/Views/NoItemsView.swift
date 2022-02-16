@@ -92,6 +92,7 @@ struct TextFieldAlert<Presenting>: View where Presenting: View
                         .frame(height: 55)
                         .background(Color(UIColor.secondarySystemBackground))
                         .cornerRadius(10)
+                        .introspectTextField { textField in textField.becomeFirstResponder()}
                     
                     HStack
                     {

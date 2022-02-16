@@ -19,8 +19,7 @@ struct ListRowView: View
         {
             HStack
             {
-                Image(systemName: toDoItem.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(toDoItem.isCompleted ? .green : .accentColor)
+                Image(systemName: toDoItem.isCompleted ? "checkmark.circle.fill" : "circle").foregroundColor(.accentColor)
                 
                 Text(toDoItem.title)
             }
