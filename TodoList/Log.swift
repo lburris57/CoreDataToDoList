@@ -68,7 +68,7 @@ enum Log
         let logComponents = ["[\(level.prefix)]", outputString]
         
         #if DEBUG
-        print(logComponents.joined(separator: " ") + " → \(context.description)")
+            print(logComponents.joined(separator: " ") + " → \(context.description)")
         #endif
     }
 }

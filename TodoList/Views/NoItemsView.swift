@@ -24,29 +24,22 @@ struct NoItemsView: View
                 Text("There are no items to display!")
                     .font(.title3)
                     .fontWeight(.semibold)
-
-                NavigationLink(
-                    destination: AddView(),
-                    label: {
-                        Text("Add New Item")
-                            .foregroundColor(.white)
-                            .font(.headline)
-                            .frame(height: 55)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.accentColor)
-                            .cornerRadius(10)
-                    })
-                    .padding(.horizontal, 50)
-                    .shadow(
-                        color: Color.accentColor.opacity(0.7),
-                        radius: 10,
-                        x: 0,
-                        y: 30)
+                    .foregroundColor(.secondary)
             }
             .frame(maxWidth: 400)
             .multilineTextAlignment(.center)
             .padding(40)
             .onAppear(perform: checkUserNameStatus)
+        }
+        .toolbar
+        {
+            HStack
+            {
+                NavigationLink(destination: AddView())
+                {
+                    Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.blue)
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .textFieldAlert(isShowing: $isShowingAlert, text: $alertInput, title: "Please Enter Your Name To Identify Items!")
@@ -138,8 +131,7 @@ struct NoItemsView_Previews: PreviewProvider
     {
         NavigationView
         {
-            NoItemsView()
-                .navigationTitle("Title")
+            NoItemsView().navigationTitle("Title")
         }
         .preferredColorScheme(.dark)
     }

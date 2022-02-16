@@ -26,12 +26,12 @@ extension SearchType
     {
         switch self
         {
-            case .noFilter:
-                return "No Filter"
-            case .notCompleted:
-                return "Not Completed"
-            case .completed:
-                return "Completed"
+        case .noFilter:
+            return "No Filter"
+        case .notCompleted:
+            return "Not Completed"
+        case .completed:
+            return "Completed"
         }
     }
 }
@@ -42,7 +42,7 @@ enum SortOrder: String, Identifiable, CaseIterable, Hashable
     {
         return UUID()
     }
-    
+
     case ascending = "Ascending"
     case descending = "Descending"
 }
@@ -53,10 +53,10 @@ extension SortOrder
     {
         switch self
         {
-            case .ascending:
-                return "Ascending"
-            case .descending:
-                return "Descending"
+        case .ascending:
+            return "Ascending"
+        case .descending:
+            return "Descending"
         }
     }
 }
@@ -64,13 +64,22 @@ extension SortOrder
 struct ListView: View
 {
     @EnvironmentObject var listViewModel: ListViewModel
-    
+
     @State private var selectedSearchType: SearchType = .noFilter
     @State private var selectedSortOrder: SortOrder = .ascending
-    
+    @State private var isAscending: Bool = true
+    @State private var toggleIcon: Bool = false
+
     func filterToDoItems()
     {
         listViewModel.filterToDoItems(searchType: selectedSearchType.searchType, sortOrder: selectedSortOrder.sortOrder)
+    }
+
+    func toggleButtonClicked()
+    {
+        toggleIcon.toggle()
+        
+        filterToDoItems()
     }
 
     var body: some View
@@ -92,7 +101,7 @@ struct ListView: View
                             HStack
                             {
                                 Text(" Filter Type:").foregroundColor(Color.secondary)
-                                
+
                                 Picker("Search Type", selection: $selectedSearchType)
                                 {
                                     ForEach(SearchType.allCases)
@@ -101,49 +110,45 @@ struct ListView: View
 
                                         Text(searchType.searchType).tag(searchType)
                                     }
-                                }.pickerStyle(.menu)
-                                
-                                Spacer()
-                                
-                                Button(action: { filterToDoItems() })
-                                {
-                                    Label("Sort", systemImage: "mail.stack").foregroundColor(.accentColor)
                                 }
-                                .padding(.horizontal, 15)
-                                
+                                .pickerStyle(.menu)
+                                .onChange(of: selectedSearchType) { value in filterToDoItems() }
+
+                                Button(action:
+                                {
+                                    if selectedSortOrder == SortOrder.ascending
+                                    {
+                                        selectedSortOrder = SortOrder.descending
+                                    }
+                                    else
+                                    {
+                                        selectedSortOrder = SortOrder.ascending
+                                    }
+                                    
+                                    toggleButtonClicked()
+                                })
+                                {
+                                    Image(systemName: "arrow.up.circle.fill")
+                                        .font(.title3)
+                                        .foregroundColor(.blue)
+                                        .rotationEffect(.degrees(toggleIcon ? 0.0 : 180.0))
+                                        .animation(Animation.linear(duration: 0.2), value: toggleIcon)
+                                }
+
+                                Spacer()
                             }
                             .padding(.leading)
-                                
-                            if selectedSearchType != SearchType.noFilter
-                            {
-                                HStack
-                                {
-                                    Text(" Sort Order:").foregroundColor(Color.secondary)
-                                    
-                                    Picker("Sort Order", selection: $selectedSortOrder)
-                                    {
-                                        ForEach(SortOrder.allCases)
-                                        {
-                                            sortOrder in
-
-                                            Text(sortOrder.sortOrder).tag(sortOrder)
-                                        }
-                                    }.pickerStyle(.menu)
-                                    
-                                }
-                                .padding(.horizontal)
-                            }
                         }
                     }
-                    
-                    HStack()
+
+                    HStack
                     {
                         List
                         {
                             ForEach(listViewModel.toDoItems)
                             {
                                 item in
-                                
+
                                 ListRowView(toDoItem: item)
                                     .onTapGesture
                                     {
@@ -158,7 +163,7 @@ struct ListView: View
                         }
                         .frame(maxWidth: 800)
                         .listStyle(PlainListStyle())
-                        
+
                         Spacer()
                     }
                 }
@@ -171,11 +176,11 @@ struct ListView: View
             {
                 HStack
                 {
-                    listViewModel.toDoItems.isEmpty ? nil : EditButton()
-                        
+                    listViewModel.toDoItems.isEmpty ? nil : EditButton().foregroundColor(Color.blue)
+
                     listViewModel.toDoItems.isEmpty ? nil : NavigationLink(destination: AddView())
                     {
-                        Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.accentColor)
+                        Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.blue)
                     }
                 }
             }

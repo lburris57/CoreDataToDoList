@@ -6,6 +6,8 @@
 //  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import SwiftUI
+import UIKit
+import Introspect
 
 struct AddView: View
 {
@@ -19,6 +21,7 @@ struct AddView: View
     @State var alertTitle: String = ""
     @State var showAlert: Bool = false
 
+    // MARK: -
     // MARK: BODY
     var body: some View
     {
@@ -26,7 +29,8 @@ struct AddView: View
         {
             VStack(alignment: .leading, spacing: 20)
             {
-                TextField("Please enter a new to do item title...", text: $title)
+                TextField("Please enter a title...", text: $title)
+                    .introspectTextField { textField in textField.becomeFirstResponder()}
                     .padding(.horizontal)
                     .frame(maxWidth: 400)
                     .frame(height: 55)
@@ -38,15 +42,16 @@ struct AddView: View
                     Text(" Enter Description:")
                     
                     TextEditor(text: $description)
+                    .padding(.horizontal)
                     .lineLimit(10)
                     .frame(maxWidth: 400)
-                    .frame(height: 200)
+                    .frame(height: 125)
                     .background(Color(UIColor.secondarySystemBackground))
-                    .border(Color.accentColor, width: 2)
-                    .cornerRadius(5)
+                    .border(Color.accentColor, width: 1)
                 }
 
-                Button(action: saveButtonPressed, label: {
+                Button(action: saveButtonPressed, label:
+                {
                     Text("Save")
                         .foregroundColor(.white)
                         .font(.headline)
@@ -68,6 +73,7 @@ struct AddView: View
         .alert(isPresented: $showAlert, content: getAlert)
     }
 
+    // MARK: -
     // MARK: FUNCTIONS
     func saveButtonPressed()
     {
@@ -91,6 +97,7 @@ struct AddView: View
     }
 }
 
+// MARK: -
 // MARK: PREVIEW
 struct AddView_Previews: PreviewProvider
 {

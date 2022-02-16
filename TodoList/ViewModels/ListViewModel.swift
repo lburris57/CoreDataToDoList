@@ -29,7 +29,7 @@ class ListViewModel: ObservableObject
     
     func filterToDoItems(searchType: String, sortOrder: String)
     {
-        Log.info("SearchType is \(searchType) and sortOrder is \(sortOrder)")
+        Log.info("SearchType is '\(searchType)' and sortOrder is '\(sortOrder)'")
         
         retrieveToDoItems()
         
@@ -60,6 +60,14 @@ class ListViewModel: ObservableObject
         else
         {
             isFiltered = false
+            
+            toDoItems = toDoItems.sorted(by:
+            {
+                lhs, rhs in
+                
+                return sortOrder == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
+                
+            })
         }
     }
     

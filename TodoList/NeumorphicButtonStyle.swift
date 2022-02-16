@@ -9,7 +9,6 @@ import SwiftUI
 
 struct NeumorphicButtonStyle: ButtonStyle
 {
-    
     func makeBody(configuration: Configuration) -> some View
     {
         configuration.label.background(

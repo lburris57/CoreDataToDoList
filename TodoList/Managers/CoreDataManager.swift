@@ -7,17 +7,20 @@
 //
 import CoreData
 import Foundation
+import CloudKit
 
 class CoreDataManager
 {
-    let persistentContainer: NSPersistentContainer
+    let persistentContainer: NSPersistentCloudKitContainer
 
     static let shared: CoreDataManager = CoreDataManager()
 
     private init()
     {
-        persistentContainer = NSPersistentContainer(name: "ToDoDatabaseModel")
-
+        persistentContainer = NSPersistentCloudKitContainer(name: "ToDoDatabaseModel")
+        persistentContainer.persistentStoreDescriptions.first!.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        persistentContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
         persistentContainer.loadPersistentStores
         {
             _, error in
@@ -33,3 +36,6 @@ class CoreDataManager
         }
     }
 }
+
+
+
