@@ -1,5 +1,5 @@
 //
-//  NoItemsView.swift
+//  NoToDoItemsView.swift
 //  TodoList
 //
 //  Created by Larry Burris on 02/14/22.
@@ -7,7 +7,7 @@
 //
 import SwiftUI
 
-struct NoItemsView: View
+struct NoToDoItemsView: View
 {
     @EnvironmentObject var listViewModel: ListViewModel
     
@@ -17,32 +17,35 @@ struct NoItemsView: View
 
     var body: some View
     {
-        ScrollView
+        NavigationView
         {
-            VStack(spacing: 10)
+            ScrollView
             {
-                Text("There are no items to display!")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-            }
-            .frame(maxWidth: 400)
-            .multilineTextAlignment(.center)
-            .padding(40)
-            .onAppear(perform: checkUserNameStatus)
-        }
-        .toolbar
-        {
-            HStack
-            {
-                NavigationLink(destination: AddView())
+                VStack(spacing: 10)
                 {
-                    Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.blue)
+                    Text("There are no items to display!")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: 400)
+                .multilineTextAlignment(.center)
+                .padding(40)
+                .onAppear(perform: checkUserNameStatus)
+            }
+            .toolbar
+            {
+                HStack
+                {
+                    NavigationLink(destination: AddToDoItemView())
+                    {
+                        Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.blue)
+                    }
                 }
             }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         .textFieldAlert(isShowing: $isShowingAlert, text: $alertInput, title: "Please Enter Your Name To Identify Items!")
+        }
         
         Spacer()
     }
@@ -70,7 +73,7 @@ struct TextFieldAlert<Presenting>: View where Presenting: View
     {
         Log.info("User name value to be saved from text field alert is: \(text)")
         
-        listViewModel.saveUserNameInformation(text)
+        listViewModel.saveUserNameToUserDefaults(text)
     }
 
     var body: some View
@@ -123,18 +126,6 @@ struct TextFieldAlert<Presenting>: View where Presenting: View
                 .opacity(self.isShowing ? 1 : 0)
             }
         }
-    }
-}
-
-struct NoItemsView_Previews: PreviewProvider
-{
-    static var previews: some View
-    {
-        NavigationView
-        {
-            NoItemsView().navigationTitle("Title")
-        }
-        .preferredColorScheme(.dark)
     }
 }
 

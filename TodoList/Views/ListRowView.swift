@@ -12,7 +12,7 @@ struct ListRowView: View
     @EnvironmentObject var listViewModel: ListViewModel
     
     let toDoItem: ToDoItem
-
+    
     var body: some View
     {
         VStack(alignment: .leading, spacing: 10)
@@ -25,13 +25,13 @@ struct ListRowView: View
             }
             .font(.callout)
             
-            Text(toDoItem.descriptionText).font(.caption).padding(.horizontal, 20).foregroundColor(.secondary)
+            Text(toDoItem.descriptionText).font(.callout).padding(.horizontal, 20).foregroundColor(.secondary)
             
             Text("Created by \(toDoItem.createdBy) on \(toDoItem.dateCreated)").font(.caption).padding(.horizontal, 20).foregroundColor(.secondary)
             
             if(toDoItem.isCompleted)
             {
-                Text("Item completed on \(toDoItem.lastUpdated)").font(.caption).padding(.horizontal, 20).foregroundColor(.secondary)
+                Text("Item completed on \(toDoItem.lastUpdated)").font(.callout).padding(.horizontal, 20).foregroundColor(.secondary)
             }
         }
     }

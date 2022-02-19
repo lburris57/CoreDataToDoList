@@ -19,6 +19,11 @@ struct ToDoItem: Identifiable
         return toDoItemEntity.objectID
     }
     
+    var category: String
+    {
+        return toDoItemEntity.category?.categoryName ?? Constants.EMPTY_STRING
+    }
+    
     var title: String
     {
         return toDoItemEntity.title ?? Constants.EMPTY_STRING
@@ -47,23 +52,5 @@ struct ToDoItem: Identifiable
     var isCompleted: Bool
     {
         return toDoItemEntity.isCompleted
-    }
-}
-
-extension Date
-{
-    func asLongDateFormattedString() -> String
-    {
-        let formatter = DateFormatter()
-        formatter.locale = .current
-        formatter.dateFormat = "EEEE, MMM d, yyyy hh:mm a"
-        return formatter.string(from: self)
-    }
-    
-    func asShortDateFormattedString() -> String
-    {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd/yyyy"
-        return formatter.string(from: self)
     }
 }

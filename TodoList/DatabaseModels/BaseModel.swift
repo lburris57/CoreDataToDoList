@@ -79,4 +79,27 @@ extension ToDoItemEntity: BaseModel
     
 }
 
+extension CategoryEntity: BaseModel
+{
+    
+}
+
+extension Date
+{
+    func asLongDateFormattedString() -> String
+    {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.dateFormat = "EEEE, MMM d, yyyy hh:mm a"
+        return formatter.string(from: self)
+    }
+    
+    func asShortDateFormattedString() -> String
+    {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy"
+        return formatter.string(from: self)
+    }
+}
+
 

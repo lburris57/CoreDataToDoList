@@ -69,10 +69,17 @@ struct ListView: View
     @State private var selectedSortOrder: SortOrder = .ascending
     @State private var isAscending: Bool = true
     @State private var toggleIcon: Bool = false
+    @State private var isPresented: Bool = false
+    @State private var selectedToDoItem: ToDoItem?
 
     func filterToDoItems()
     {
         listViewModel.filterToDoItems(searchType: selectedSearchType.searchType, sortOrder: selectedSortOrder.sortOrder)
+    }
+    
+    func deleteItem(toDoItem: ToDoItem)
+    {
+        listViewModel.deleteItem(toDoItem: toDoItem)
     }
 
     func toggleButtonClicked()
@@ -84,103 +91,136 @@ struct ListView: View
 
     var body: some View
     {
-        ZStack
+        NavigationView
         {
-            VStack(alignment: .leading)
+            ZStack
             {
-                if listViewModel.toDoItems.isEmpty && listViewModel.isFiltered == false
+                VStack(alignment: .leading)
                 {
-                    NoItemsView().transition(AnyTransition.opacity.animation(.easeIn))
-                }
-                else
-                {
-                    if listViewModel.toDoItems.count > 0 || listViewModel.isFiltered == true
+                    if listViewModel.toDoItems.isEmpty && listViewModel.isFiltered == false
                     {
-                        VStack(alignment: .leading, spacing: 0)
-                        {
-                            HStack
-                            {
-                                Text(" Filter Type:").foregroundColor(Color.secondary)
-
-                                Picker("Search Type", selection: $selectedSearchType)
-                                {
-                                    ForEach(SearchType.allCases)
-                                    {
-                                        searchType in
-
-                                        Text(searchType.searchType).tag(searchType)
-                                    }
-                                }
-                                .pickerStyle(.menu)
-                                .onChange(of: selectedSearchType) { value in filterToDoItems() }
-
-                                Button(action:
-                                {
-                                    if selectedSortOrder == SortOrder.ascending
-                                    {
-                                        selectedSortOrder = SortOrder.descending
-                                    }
-                                    else
-                                    {
-                                        selectedSortOrder = SortOrder.ascending
-                                    }
-                                    
-                                    toggleButtonClicked()
-                                })
-                                {
-                                    Image(systemName: "arrow.up.circle.fill")
-                                        .font(.title3)
-                                        .foregroundColor(.blue)
-                                        .rotationEffect(.degrees(toggleIcon ? 0.0 : 180.0))
-                                        .animation(Animation.linear(duration: 0.2), value: toggleIcon)
-                                }
-
-                                Spacer()
-                            }
-                            .padding(.leading)
-                        }
+                        NoToDoItemsView().transition(AnyTransition.opacity.animation(.easeIn))
                     }
-
-                    HStack
+                    else
                     {
-                        List
+                        if listViewModel.toDoItems.count > 0 || listViewModel.isFiltered == true
                         {
-                            ForEach(listViewModel.toDoItems)
+                            VStack(alignment: .leading, spacing: 0)
                             {
-                                item in
+                                HStack
+                                {
+                                    Text(" Filter Type:").foregroundColor(Color.secondary)
 
-                                ListRowView(toDoItem: item)
-                                    .onTapGesture
+                                    Picker("Search Type", selection: $selectedSearchType)
                                     {
-                                        withAnimation(.linear)
+                                        ForEach(SearchType.allCases)
                                         {
-                                            listViewModel.updateItem(toDoItem: item)
+                                            searchType in
+
+                                            Text(searchType.searchType).tag(searchType)
                                         }
                                     }
-                            }
-                            .onDelete(perform: listViewModel.deleteItem)
-                            .onMove(perform: listViewModel.moveItem)
-                        }
-                        .frame(maxWidth: 800)
-                        .listStyle(PlainListStyle())
+                                    .pickerStyle(.menu)
+                                    .onChange(of: selectedSearchType) { value in filterToDoItems() }
 
-                        Spacer()
+                                    Button(action:
+                                    {
+                                        if selectedSortOrder == SortOrder.ascending
+                                        {
+                                            selectedSortOrder = SortOrder.descending
+                                        }
+                                        else
+                                        {
+                                            selectedSortOrder = SortOrder.ascending
+                                        }
+                                        
+                                        toggleButtonClicked()
+                                    })
+                                    {
+                                        Image(systemName: "arrow.up.circle.fill")
+                                            .font(.title3)
+                                            .foregroundColor(.blue)
+                                            .rotationEffect(.degrees(toggleIcon ? 0.0 : 180.0))
+                                            .animation(Animation.linear(duration: 0.2), value: toggleIcon)
+                                    }
+
+                                    Spacer()
+                                }
+                                .padding(.leading)
+                            }
+                        }
+
+                        HStack
+                        {
+                            List
+                            {
+                                Section(header:
+                                            
+                                HStack
+                                {
+                                    Text("Home").foregroundColor(.blue)
+                                    Image(systemName: "house.fill").foregroundColor(.blue)
+                                })
+                                {
+                                    ForEach(listViewModel.toDoItems)
+                                    {
+                                        toDoItem in
+
+                                        ListRowView(toDoItem: toDoItem)
+                                            .swipeActions(edge: .trailing, allowsFullSwipe: false)
+                                        {
+                                            
+                                            Button("Edit")
+                                            {
+                                                selectedToDoItem = toDoItem
+                                            }
+                                            .tint(.green)
+                                            
+                                            Button("Delete")
+                                            {
+                                                withAnimation(.easeInOut)
+                                                {
+                                                    deleteItem(toDoItem: toDoItem)
+                                                }
+                                            }
+                                            .tint(.red)
+                                        }
+                                        .onTapGesture
+                                        {
+                                            withAnimation(.linear)
+                                            {
+                                                listViewModel.updateIsCompleted(toDoItem: toDoItem)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(maxWidth: 800)
+                            .listStyle(.sidebar)
+
+                            Spacer()
+                        }
+                        .padding(.bottom)
                     }
+                }.navigationTitle("To Do Items")
+                .fullScreenCover(item: $selectedToDoItem)
+                {
+                    item in
+                    
+                    EditToDoItemView(toDoItem: item)
                 }
             }
-        }
-        .navigationTitle("To Do Items")
-        .toolbar
-        {
-            ToolbarItemGroup(placement: .navigationBarTrailing)
-            {
-                HStack
-                {
-                    listViewModel.toDoItems.isEmpty ? nil : EditButton().foregroundColor(Color.blue)
 
-                    listViewModel.toDoItems.isEmpty ? nil : NavigationLink(destination: AddView())
+            .toolbar
+            {
+                ToolbarItemGroup(placement: .navigationBarTrailing)
+                {
+                    HStack
                     {
-                        Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.blue)
+                        listViewModel.toDoItems.isEmpty ? nil : NavigationLink(destination: AddToDoItemView())
+                        {
+                            Label("Add ToDoItem", systemImage: "plus.circle.fill").foregroundColor(.blue)
+                        }
                     }
                 }
             }
@@ -192,10 +232,7 @@ struct ListView_Previews: PreviewProvider
 {
     static var previews: some View
     {
-        NavigationView
-        {
-            ListView()
-        }
+        ListView()
         .preferredColorScheme(.dark)
         .environmentObject(ListViewModel())
     }

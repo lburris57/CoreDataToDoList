@@ -6,6 +6,7 @@
 //  Copyright © 2022 Larry Burris. All rights reserved.
 //
 import SwiftUI
+import CloudKit
 
 @main
 struct TodoListApp: App
@@ -18,15 +19,12 @@ struct TodoListApp: App
     {
         WindowGroup
         {
-            NavigationView
-            {
-                ListView()
-            }
-            .navigationViewStyle(StackNavigationViewStyle())
+            ListView()
             .environmentObject(listViewModel)
             .environment(\.managedObjectContext, persistentContainer.viewContext)
             .onAppear
             {
+                // Disable the UIConstraint to fix bug in Apple's code
                 UserDefaults.standard.setValue(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
             }
         }

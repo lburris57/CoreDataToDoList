@@ -15,6 +15,7 @@ class ListViewModel: ObservableObject
     
     @Published var userName: String = "Anonymous"
     @Published var toDoItems: [ToDoItem] = []
+    @Published var categories: [Category] = []
     
     let userNameKey: String = "userName"
     
@@ -26,6 +27,8 @@ class ListViewModel: ObservableObject
         retrieveUserNameFromUserDefaults()
     }
     
+    // MARK: -
+    // MARK: Filter Functions
     func filterToDoItems(searchType: String, sortOrder: String)
     {
         Log.info("SearchType is '\(searchType)' and sortOrder is '\(sortOrder)'")
@@ -41,7 +44,6 @@ class ListViewModel: ObservableObject
                 lhs, rhs in
                 
                 return sortOrder == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
-                
             })
         }
         else if searchType == "Not Completed"
@@ -53,7 +55,6 @@ class ListViewModel: ObservableObject
                 lhs, rhs in
                 
                 return sortOrder == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
-                
             })
         }
         else
@@ -65,21 +66,24 @@ class ListViewModel: ObservableObject
                 lhs, rhs in
                 
                 return sortOrder == "Ascending" ? lhs.lastUpdated < rhs.lastUpdated : lhs.lastUpdated > rhs.lastUpdated
-                
             })
         }
     }
     
+    // MARK: -
+    // MARK: Retrieve Functions
     func retrieveUserNameFromUserDefaults()
     {
         guard let data = UserDefaults.standard.data(forKey: userNameKey),
               let savedUserName = try? JSONDecoder().decode(String.self, from: data)
         else
         {
-            saveUserNameInformation("Anonymous")
+            saveUserNameToUserDefaults("Anonymous")
+            
             return
         }
 
+        //  Set the current user name to the user name in UserDefaults
         userName = savedUserName
         
         Log.info("Retrieved username from UserDefaults is: \(userName)")
@@ -89,7 +93,14 @@ class ListViewModel: ObservableObject
     {
         toDoItems = ToDoItemEntity.all().map(ToDoItem.init)
     }
+    
+    func retrieveCategories()
+    {
+        categories = CategoryEntity.all().map(Category.init)
+    }
 
+    // MARK: -
+    // MARK: Delete Functions
     func deleteItem(indexSet: IndexSet)
     {
         var toDoItem: ToDoItem
@@ -104,10 +115,41 @@ class ListViewModel: ObservableObject
             retrieveToDoItems()
         }
     }
-
-    func moveItem(from: IndexSet, to: Int)
+    
+    func deleteItem(toDoItem: ToDoItem)
     {
-        toDoItems.move(fromOffsets: from, toOffset: to)
+        if let retrievedToDoItem = ToDoItemEntity.byId(id: toDoItem.id) as? ToDoItemEntity
+        {
+            //  Delete the database record and refresh the list from the database
+            retrievedToDoItem.delete()
+        
+            retrieveToDoItems()
+        }
+    }
+    
+    // MARK: -
+    // MARK: Add Functions
+    func addCategory(categoryName: String)
+    {
+        for category in categories
+        {
+            if category.categoryName == categoryName
+            {
+                return
+            }
+        }
+        
+        let categoryEntity = CategoryEntity(context: viewContext)
+        
+        categoryEntity.categoryName = categoryName.capitalized
+        categoryEntity.createdBy = userName
+        categoryEntity.dateCreated = Date()
+        categoryEntity.lastUpdated = Date()
+        
+        categoryEntity.save()
+        
+        retrieveToDoItems()
+        filterToDoItems(searchType: "No Filter", sortOrder: "Ascending")
     }
 
     func addToDoItem(title: String, description: String)
@@ -124,9 +166,12 @@ class ListViewModel: ObservableObject
         toDoItemEntity.save()
         
         retrieveToDoItems()
+        filterToDoItems(searchType: "No Filter", sortOrder: "Ascending")
     }
 
-    func updateItem(toDoItem: ToDoItem)
+    // MARK: -
+    // MARK: Update Functions
+    func updateIsCompleted(toDoItem: ToDoItem)
     {
         if let toDoItemEntity = ToDoItemEntity.byId(id: toDoItem.id) as? ToDoItemEntity
         {
@@ -139,7 +184,24 @@ class ListViewModel: ObservableObject
         retrieveToDoItems()
     }
     
-    func saveUserNameInformation(_ userName: String)
+    func updateItem(toDoItem: ToDoItem)
+    {
+        if let toDoItemEntity = ToDoItemEntity.byId(id: toDoItem.id) as? ToDoItemEntity
+        {
+            toDoItemEntity.title = toDoItem.title
+            toDoItemEntity.descriptionText = toDoItem.descriptionText
+            toDoItemEntity.lastUpdated = Date()
+            
+            toDoItemEntity.save()
+        }
+        
+        retrieveToDoItems()
+        filterToDoItems(searchType: "No Filter", sortOrder: "Ascending")
+    }
+    
+    // MARK: -
+    // MARK: Save Functions
+    func saveUserNameToUserDefaults(_ userName: String)
     {
         if let encodedData = try? JSONEncoder().encode(userName)
         {
@@ -147,5 +209,6 @@ class ListViewModel: ObservableObject
         }
         
         retrieveUserNameFromUserDefaults()
+        filterToDoItems(searchType: "No Filter", sortOrder: "Ascending")
     }
 }

@@ -14,7 +14,7 @@ class CoreDataManager
     let persistentContainer: NSPersistentCloudKitContainer
 
     static let shared: CoreDataManager = CoreDataManager()
-
+    
     private init()
     {
         persistentContainer = NSPersistentCloudKitContainer(name: "ToDoDatabaseModel")
